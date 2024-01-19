@@ -2,14 +2,12 @@ package kafka
 
 import (
 	"context"
-
-	"github.com/94peter/log"
 )
 
 type CommonKafka interface {
 	GetKafkaWriter() Writer
 	Close()
-	SetLog(log.Logger)
+	SetLog(Logger)
 }
 
 func NewCommonKafka(ctx context.Context, di ConfigDI, topic string) CommonKafka {
@@ -25,10 +23,10 @@ type commonKafkaImpl struct {
 	ConfigDI
 	kafkaWriter Writer
 	topic       string
-	log         log.Logger
+	log         Logger
 }
 
-func (s *commonKafkaImpl) SetLog(l log.Logger) {
+func (s *commonKafkaImpl) SetLog(l Logger) {
 	s.log = l
 }
 func (s *commonKafkaImpl) GetKafkaWriter() Writer {

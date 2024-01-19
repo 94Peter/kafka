@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/94peter/log"
 	"github.com/segmentio/kafka-go"
 )
 
 type Writer interface {
-	SetLog(log.Logger)
+	SetLog(Logger)
 	Message(headers map[string][]byte, msg []byte) error
 	Close() error
 }
@@ -28,10 +27,10 @@ func (c *KafkaConfig) NewKafkaWriter(ctx context.Context, topic string) Writer {
 type writerImpl struct {
 	ctx   context.Context
 	kafka *kafka.Writer
-	l     log.Logger
+	l     Logger
 }
 
-func (wi *writerImpl) SetLog(l log.Logger) {
+func (wi *writerImpl) SetLog(l Logger) {
 	wi.l = l
 }
 

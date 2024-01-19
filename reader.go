@@ -7,12 +7,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/94peter/log"
 	"github.com/segmentio/kafka-go"
 )
 
 type Reader interface {
-	SetLog(log.Logger)
 	Read() (map[string]string, []byte, error)
 	ReadHandler(handler ReaderHandler) error
 	Close() error
@@ -38,12 +36,12 @@ func (c *KafkaConfig) NewKafkaReader(ctx context.Context, groupID, topic string)
 type readerImpl struct {
 	ctx   context.Context
 	kafka *kafka.Reader
-	log   log.Logger
+	log   Logger
 }
 
 type ReaderHandler func(headers map[string]string, data []byte) error
 
-func (ri *readerImpl) SetLog(l log.Logger) {
+func (ri *readerImpl) SetLog(l Logger) {
 	ri.log = l
 }
 func (ri *readerImpl) Read() (map[string]string, []byte, error) {
@@ -82,7 +80,7 @@ func (ri *readerImpl) ReadHandler(handler ReaderHandler) error {
 	retriedTimes := 0
 	for err = handler(headers, m.Value); err != nil; err = handler(headers, m.Value) {
 		if ri.log != nil {
-			ri.log.WarnPkg(fmt.Errorf("hanlder data fail and waiting for 5 secs to retry: %w", err))
+			ri.log.Debug(fmt.Sprintf("hanlder data fail and waiting for 5 secs to retry: %s", err.Error()))
 		} else {
 			fmt.Println("hanlder data fail and waiting for 5 secs to retry: ", err)
 		}
